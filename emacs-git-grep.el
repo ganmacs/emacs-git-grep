@@ -31,13 +31,13 @@
 
 (defun emacs-git-grep-init ()
   (let ((cmd (read-shell-command "git grep: " git-grep-helm-base-command))
-        (buffer (helm-candidate-buffer 'global))
-        (default-directory (concat (git-project-root-directory) "/")))
+        (buffer (helm-candidate-buffer 'global)))
     (with-current-buffer buffer
-      (unless (zerop (call-process-shell-command cmd default-directory t))
-        (error "Failed: '%s'" cmd))
-      (when (zerop (length (buffer-string)))
-        (error "No output: '%s'" cmd)))))
+      (let ((default-directory (concat (git-project-root-directory) "/")))
+        (unless (zerop (call-process-shell-command cmd nil t))
+          (error "Failed: '%s'" cmd))
+        (when (zerop (length (buffer-string)))
+          (error "No output: '%s'" cmd))))))
 
 (defun emacs-git-grep-condidates-style (candidate)
   (let* ((elements (split-string candidate ":"))

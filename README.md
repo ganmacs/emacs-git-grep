@@ -12,7 +12,25 @@
 
 ## Installation
 
-Add your `.emacs.el`
+Please clone this repository.
+
+```
+git clone https://github.com/ganmacs/emacs-git-grep.git
+```
+
+Open your .emacs or init.el.
+
+```
+(add-to-list 'load-path "~/emacs.d/emacs-git-grep")
+```
+
+And then just require as normal.
+
+```
+(require 'eamcs-git-grep)
+```
+
+## example settings
 
 ```
 (require 'eamcs-git-grep)

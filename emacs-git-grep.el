@@ -6,15 +6,26 @@
   "git grep  with helm interface"
   :group 'helm)
 
-(defcustom git-grep-helm-base-command "git grep -n -i -I --no-color "
-  "git grep base command"
-  :type 'string
-  :group 'git-grep-helm)
-
-(defcustom git-grep-helm-optional-command ""
+(defcustom emacs-git-grep-optional-command ""
   "git grep optional command"
   :type 'string
   :group 'git-grep-helm)
+
+(defcustom emacs-git-grep-condidates-limits 200
+  "emacs git grep prompt"
+  :type 'integer
+  :group 'git-grep-helm)
+
+(defcustom emacs-git-grep-helm-ignore-case t
+  "git grep ignore case"
+  :type 'boolean
+  :group 'git-grep-helm)
+
+(defvar emacs-git-grep-base-command "git grep -n -I --no-color ")
+(defvar emacs-git-grep-buffer "emacs git grep")
+(defvar emacs-git-grep-prompt "git grep: ")
+(defvar emacs-git-grep-mark-point "")
+(defvar emacs-git-grep-point "")
 
 (defun chomp (str)
   (replace-regexp-in-string "[\n\r]" "" str))

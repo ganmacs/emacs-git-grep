@@ -34,5 +34,5 @@ And then just require as normal.
 
 ```
 (require 'eamcs-git-grep)
-(global-set-key (kbd "C-c g") 'emacs-git-grep)
+(global-set-key (kbd "C-g g") 'emacs-git-grep)
 ```

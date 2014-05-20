@@ -11,7 +11,7 @@
   :type 'string
   :group 'git-grep-helm)
 
-(defcustom emacs-git-grep-condidates-limits 200
+(defcustom emacs-git-grep-candidates-limits 200
   "emacs git grep prompt"
   :type 'integer
   :group 'git-grep-helm)
@@ -27,30 +27,37 @@
 (defvar emacs-git-grep-mark-point "")
 (defvar emacs-git-grep-point "")
 
-(defun chomp (str)
+(defun emacs-git-grep-chomp (str)
   (replace-regexp-in-string "[\n\r]" "" str))
 
-(defun git-project? ()
+(defun emacs-git-project? ()
   (let* ((cmd "git rev-parse --is-inside-work-tree")
-         (project (chomp (shell-command-to-string cmd))))
+         (project (emacs-git-grep-chomp (shell-command-to-string cmd))))
     (string= project "true")))
 
-(defun git-project-root-directory ()
+(defun emacs-git-grep-directory ()
   (let ((cmd "git rev-parse --show-toplevel"))
-    (if (git-project?)
-        (chomp (shell-command-to-string cmd)))))
+    (if (emacs-git-project?)
+        (concat (emacs-git-grep-chomp (shell-command-to-string cmd)) "/"))))
+
+(defun emacs-git-grep-command ()
+  (format "%s%s%s"
+          emacs-git-grep-base-command
+          (if emacs-git-grep-helm-ignore-case "-i " "")
+          (if (string= "" emacs-git-grep-mark-point) "" emacs-git-grep-mark-point)))
 
 (defun emacs-git-grep-init ()
-  (let ((cmd (read-shell-command "git grep: " git-grep-helm-base-command))
-        (buffer (helm-candidate-buffer 'global)))
+  (let* ((cmd-format (emacs-git-grep-command))
+         (cmd (read-shell-command emacs-git-grep-prompt cmd-format))
+         (buffer (helm-candidate-buffer 'global)))
     (with-current-buffer buffer
-      (let ((default-directory (concat (git-project-root-directory) "/")))
+      (let ((default-directory  (emacs-git-grep-directory)))
         (unless (zerop (call-process-shell-command cmd nil t))
           (error "Failed: '%s'" cmd))
         (when (zerop (length (buffer-string)))
           (error "No output: '%s'" cmd))))))
 
-(defun emacs-git-grep-condidates-style (candidate)
+(defun emacs-git-grep-candidates-style (candidate)
   (let* ((elements (split-string candidate ":"))
          (file-path (propertize (car elements) 'face 'helm-moccur-buffer))
          (line (propertize (cadr elements) 'face 'helm-grep-lineno))
@@ -59,7 +66,7 @@
 
 (defun emacs-git-grep-find-file-action (candidate)
   (let* ((elements (split-string candidate ":"))
-         (file-path (concat (git-project-root-directory) "/" (car elements)))
+         (file-path (concat (emacs-git-grep-directory) (car elements)))
          (line (string-to-number (cadr elements))))
     (find-file file-path)
     (goto-char (point-min))
@@ -67,7 +74,7 @@
 
 (defun emacs-git-grep-persistent-action (candidate)
   (let* ((elements (split-string candidate ":"))
-         (file-path (concat (git-project-root-directory) "/" (car elements)))
+         (file-path (concat (emacs-git-grep-directory) (car elements)))
          (line (string-to-number (cadr elements))))
     (find-file file-path)
     (goto-char (point-min))
@@ -75,20 +82,24 @@
     (helm-highlight-current-line)))
 
 (defvar emacs-git-grep-source
-  '((name . "emacs git grep")
+  '((name . emacs-git-grep-buffer)
     (init . emacs-git-grep-init)
     (candidates-in-buffer)
     (persistent-action . emacs-git-grep-persistent-action)
-    (real-to-display . emacs-git-grep-condidates-style)
+    (real-to-display . emacs-git-grep-candidates-style)
     (action . (("Open File" . emacs-git-grep-find-file-action)))
-    (candidate-number-limit . 9999)))
+    (candidate-number-limit . emacs-git-grep-condidates-limits)))
 
 ;;;###autoload
 (defun emacs-git-grep ()
   (interactive)
-  (helm-attrset 'git-project-root-directory nil emacs-git-grep-source)
-  (helm :sources emacs-git-grep-source
-        :buffer "*git-grep-helm*"))
+  (unless (emacs-git-project?) (error "here is not git repogitory"))
+  (let ((emacs-git-grep-mark-point (emacs-git-grep-mark-string))
+        (header-name (format "Search at %s" (emacs-git-grep-directory))))
+    (helm-attrset 'name header-name emacs-git-grep-source)
+    (helm :buffer "*git-grep-helm*"
+          :sources emacs-git-grep-source
+          :candidate-number-limit emacs-git-grep-candidates-limits)))
 
 (provide 'emacs-git-grep)
 

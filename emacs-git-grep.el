@@ -124,6 +124,7 @@
   (unless (emacs-git-project?) (error "here is not git repogitory"))
   (let ((emacs-git-grep-mark-point (emacs-git-grep-mark-string))
         (header-name (format "Search at %s" (emacs-git-grep-directory))))
+    (set-mark nil)
     (helm-attrset 'name header-name emacs-git-grep-source)
     (helm :buffer "*git-grep-helm*"
           :sources emacs-git-grep-source

@@ -87,8 +87,12 @@
     (candidates-in-buffer)
     (persistent-action . emacs-git-grep-persistent-action)
     (real-to-display . emacs-git-grep-candidates-style)
-    (action . (("Open File" . emacs-git-grep-find-file-action)))
-    (candidate-number-limit . emacs-git-grep-condidates-limits)))
+    (action . (("Open File" . emacs-git-grep-find-file-action)))))
+
+(defun emacs-git-grep-mark-string ()
+  (if (and mark-active transient-mark-mode)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    ""))
 
 ;;;###autoload
 (defun emacs-git-grep ()

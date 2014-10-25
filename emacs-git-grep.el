@@ -1,12 +1,15 @@
-;; Description: interface of git grep with helm.
+;;; emacs-git-grep.el --- interface of git grep with helm
+
+;; Copyright (C) 2013-2014 ganmacs
+
 ;; Author: ganmacs <ganmacs_at_gmail.com>
-;; Maintainer: ganmacs
-;; Copyright (C) 2014 myuhe all rights reserved.
-;; Created: :2014-5-20
+;; Maintainer: ganmacs <ganmacs_at_gmail.com>
+;; URL: https://github.com/ganmacs/emacs-git-grep
 ;; Version: 0.0.1
 ;; Keywords: helm, git
-;; URL: https://github.com/ganmacs/emacs-git-grep
 ;; Package-Requires: ((helm "1.6.1"))
+
+;; This file is NOT part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,6 +24,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Commentary:
+
+;;; Code:
 
 (require 'cl-lib)
 (require 'helm)
